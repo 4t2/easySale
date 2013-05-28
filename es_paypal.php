@@ -123,7 +123,7 @@ class es_paypal extends \Frontend
      * @param $intproductId
      * @return bool
      */
-    private function getproductData($intproductId, $strTable){
+    private function getProductData($intproductId, $strTable){
         $query  = 'SELECT * FROM `' . $strTable . '` WHERE `id` = ' . $intproductId;
         $result = $this->Database->query($query);
 
@@ -140,11 +140,12 @@ class es_paypal extends \Frontend
      * @param $arrData
      */
     private function setupPayPal($intproductId, $strTable){
-        $arrData = $this->getproductData($intproductId, $strTable);
+        $arrData = $this->getProductData($intproductId, $strTable);
 
         if($arrData){
             $strPrice                   = $this->getSettings($arrData['product_price'], $GLOBALS['TL_CONFIG']['product_price']);
             $strPrice                   = (substr_count($strPrice, ',')) ? str_replace(',', '.', $strPrice) : $strPrice;
+
             $arrPayPal['ipn']           = $this->ipn;
             $arrPayPal['custom']        = $this->returnUrl;     // die return-Seite leitet nach dem Speichern der Daten auf die in custom gespeicherten Seite weiter. so wird der Contao-Request-Token-Error umgangen!
             $arrPayPal['cancel_return'] = $this->cancelUrl;
@@ -154,7 +155,7 @@ class es_paypal extends \Frontend
             $arrPayPal['item_name']     = $this->getSettings($arrData['product_name'], $GLOBALS['TL_CONFIG']['product_name']);
             $arrPayPal['amount']        = number_format(floatval($strPrice), 2, '.', '');
             $arrPayPal['invoice']       = $this->makeTransactinCode($arrPayPal);
-            $arrPayPal['return']        = $this->insertSite . '?invoice=' . $arrPayPal['invoice'];    // retrun gaht auf die Seite, die die Daten Speichert.
+            $arrPayPal['return']        = $this->insertSite . '?invoice=' . $arrPayPal['invoice'];    // return geht auf die Seite, die die Daten speichert
 
             $this->es_paypal_inc->addArray($arrPayPal);
             $this->saveTransaction($arrPayPal, $arrData);

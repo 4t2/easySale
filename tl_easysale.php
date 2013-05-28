@@ -163,20 +163,18 @@ class tl_easysale extends \BackendModule
     public function getPageUrl($intID, $strAdd = ''){
         if(version_compare(VERSION . '.' . BUILD, '3.0.0', '>')){
             // Contao 3.x.x
-            $objPages   = \PageModel::findPublishedById($intID);
+            $objPage   = \PageModel::findPublishedById($intID);
         } else {
             // Contao 2.11.x
             $this->import('Environment');
-            $objPages   = $this->getPageDetails($intID);
+            $objPage   = $this->getPageDetails($intID);
         }
 
-        $strAlias   = ($objPages->alias != '' && !$GLOBALS['TL_CONFIG']['disableAlias']) ? $objPages->alias : $objPages->id;
-        $strUrl     = ($objPages->domain != '' ? ($this->Environment->ssl ? 'https://' : 'http://').$objPages->domain : $this->Environment->url);
-        $arrRequest = explode('?', $this->Environment->requestUri);
-        $strUrl    .= (is_array($arrRequest) && substr_count($arrRequest[0], '.php') == 0 && substr_count($arrRequest[0], '.html') == 0) ? $arrRequest[0] : '/';
-        $strUrl    .= (!$GLOBALS['TL_CONFIG']['rewriteURL']) ? 'index.php/' : '';  // ist in requestUri mit drin!!!
-        $strUrl    .= (array_key_exists('urlSuffix', $GLOBALS['TL_CONFIG']) && $GLOBALS['TL_CONFIG']['urlSuffix'] != '' && !substr_count($strAlias, $GLOBALS['TL_CONFIG']['urlSuffix'])) ? $strAlias . $GLOBALS['TL_CONFIG']['urlSuffix'] : $strAlias;
-        $strUrl    .= $strAdd;
+		$strUrl = ($objPage->domain != '' ? ($this->Environment->ssl ? 'https://' : 'http://').$objPage->domain : $this->Environment->url) . '/';
+
+		$strUrl .= $this->generateFrontendUrl($objPage->row());
+        $strUrl .= $strAdd;
+
         return $strUrl;
     }
 

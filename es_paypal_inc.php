@@ -293,7 +293,6 @@ class es_paypal_inc extends \System{
         foreach ($arrData as $name => $value) {
             $this->add($name, $value);
         }
-
     }
 
 
